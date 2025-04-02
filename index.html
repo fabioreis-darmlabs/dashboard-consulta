@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #resultado {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            white-space: pre-wrap;
+        }
+        .error {
+            color: red;
+        }
+        select {
+            height: auto;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,.3);
+            border-radius: 50%;
+            border-top-color: #4CAF50;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <h2>Consulta de Dashboard</h2>
+    <div class="form-group">
+        <label for="userName">Nome de Usuário:</label>
+        <input type="text" id="userName" name="userName" required>
+    </div>
+    <div class="form-group">
+        <label for="empresa">Empresa:</label>
+        <select id="empresa" name="empresa" required>
+            <option value="">Selecione uma empresa</option>
+            <option value="02468305-cb1a-4c07-9ce5-66a6ba53e8f8">Furukawa Locem</option>
+            <option value="061ba622-37b5-4cfd-b81e-849ff8fa7879">Ligga Telecom</option>
+            <option value="06d29473-647a-4907-82fc-f28d2f56efc1">Cirion - IoT</option>
+            <option value="08290416-7f65-497a-9aec-ef337175812f">Algar - POC</option>
+            <option value="14238f96-0cba-4947-9659-c239f4d1d400">Furukawa OSP</option>
+            <option value="158b295e-543b-46d9-b964-2c7a7a72cab0">AmericaNet</option>
+            <option value="1bd6cc5d-01e5-4b0b-8a7a-0ce92a83f812">Sigmafone</option>
+            <option value="29d4f68e-8d11-4c24-98d1-78c80810d62c">VMAX</option>
+            <option value="30d74cb3-41fb-4d10-b1d2-9e55543a81ba">FiBrasil</option>
+            <option value="3d1d9f37-ecf8-42ed-91fe-d36c31d1ba12">D&T</option>
+            <option value="41d27314-63b7-4250-8a3d-bbd455b8042b">WTL</option>
+            <option value="459de4ae-cf5d-4c14-a10c-4a50afd3788a">Furukawa</option>
+            <option value="5f040a26-076c-4d94-86df-f5a3de86feb3">DESKTOP INTERNET LTDA</option>
+            <option value="6a938350-57d5-4d43-96e5-2038f183e48c">Tigo Honduras</option>
+            <option value="6bd09df1-ef2a-4393-a53e-ad33971019b8">FiBrasil Homolog</option>
+            <option value="84166304-71b7-49b3-8742-a4e14ccca892">Everon (Chaco Digital)</option>
+            <option value="8e4b0c7a-c4ed-474b-bb7a-8dafda257652">Alares</option>
+            <option value="8fedf8dc-8be0-4508-86f8-1ee91282a969">Kira Tec</option>
+            <option value="9c303c36-3684-4383-adb7-7c70d209abae">Furukawa OSP EN</option>
+            <option value="a0567f1c-8e40-4794-a1aa-e0e492193956">RTS</option>
+            <option value="a3b7830b-fbb9-4bf2-a0e5-13769f3af1f6">Furukawa OSP ES</option>
+            <option value="aee98fff-a02d-4892-b699-cc7bb1b1573e">V.Tal IoT</option>
+            <option value="b326b1e7-a405-43a1-8478-3f9997af6a2d">Globaltask</option>
+            <option value="d5e8074e-e922-443a-ba29-9c55ffabc236">NWI</option>
+            <option value="d7526f62-447f-47b6-b36e-dbef8228981d">PI Conectado</option>
+            <option value="d9c6b124-e2b9-49ac-b20e-4ab648623e90">LOCEM TST Eyon</option>
+            <option value="f9758eae-3711-4147-ad23-c25c864e9114">WConect</option>
+        </select>
+    </div>
+    <button id="btnConsultar">Consultar Dashboard</button>
+    
+    <div id="resultado" style="display: none;"></div>
+    
+    <script>
+        document.getElementById('btnConsultar').addEventListener('click', function() {
+            const userName = document.getElementById('userName').value;
+            const tenantId = document.getElementById('empresa').value;
+            
+            if (!userName || !tenantId) {
+                alert('Por favor, preencha todos os campos!');
+                return;
+            }
+            
+            const resultadoDiv = document.getElementById('resultado');
+            resultadoDiv.innerHTML = 'Consultando... <div class="loading"></div>';
+            resultadoDiv.style.display = 'block';
+            
+            // Dados para enviar
+            const data = {
+                user_name: userName,
+                tenant_id: tenantId
+            };
+            
+            // Mostrar os dados que estão sendo enviados
+            console.log("Enviando dados:", data);
+            
+            // Configuração da requisição
+            fetch('https://xxc106ea7j.execute-api.us-east-1.amazonaws.com/dev/insights-quicksights-dashboards', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                console.log("Status da resposta:", response.status);
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`Erro HTTP ${response.status}: ${text || 'Sem detalhes'}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Dados recebidos:", data);
+                
+                // Verifica se existe uma URL de dashboard nos dados recebidos
+                let dashboardUrl = '';
+                if (data && data.dashboard_url) {
+                    dashboardUrl = `<p><a href="${data.dashboard_url}" target="_blank" class="btn-dashboard">Abrir Dashboard</a></p>`;
+                }
+                
+                resultadoDiv.innerHTML = `
+                    <strong>Resultado da consulta:</strong><br>
+                    ${dashboardUrl}
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                
+                // Adiciona estilo ao botão
+                document.head.insertAdjacentHTML('beforeend', `
+                    <style>
+                        .btn-dashboard {
+                            display: inline-block;
+                            background-color: #007bff;
+                            color: white;
+                            padding: 10px 15px;
+                            text-decoration: none;
+                            border-radius: 4px;
+                            margin: 10px 0;
+                        }
+                        .btn-dashboard:hover {
+                            background-color: #0056b3;
+                        }
+                        pre {
+                            background-color: #f5f5f5;
+                            padding: 10px;
+                            border-radius: 4px;
+                            overflow-x: auto;
+                        }
+                    </style>
+                `);
+            })
+            .catch(error => {
+                console.error("Erro completo:", error);
+                resultadoDiv.innerHTML = `<div class="error">
+                    <strong>Erro ao consultar:</strong><br>
+                    ${error.message}<br><br>
+                    <p>Se o erro persistir, pode ser devido a:</p>
+                    <ul>
+                        <li>Problemas de CORS (Cross-Origin Resource Sharing)</li>
+                        <li>API inacessível ou indisponível no momento</li>
+                        <li>Erro na formatação dos dados enviados</li>
+                    </ul>
+                    <p>Tente novamente mais tarde ou contate o suporte técnico.</p>
+                </div>`;
+            });
+        });
+    </script>
+</body>
+</html>
